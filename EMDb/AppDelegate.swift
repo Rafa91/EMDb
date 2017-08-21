@@ -16,7 +16,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        NotificationCenter.default.addObserver(self, selector: #selector(updateFavoriteBadgeNotification), name: Notification.Name("updateFavoritesBadgeNotification"), object: nil)
+        let dataProvider = LocalCoreDataService()
+        dataProvider.updateFavoritesBadge()
         return true
+    }
+    
+    func updateFavoriteBadgeNotification (notification: Notification){
+        let tabBarVC = self.window?.rootViewController as! UITabBarController
+        let favNavVC = tabBarVC.viewControllers?.last as! UINavigationController
+        if let total = notification.object as? Int{
+            if total != 0 {
+                favNavVC.tabBarItem.badgeValue = "\(total)"
+            }else{
+                favNavVC.tabBarItem.badgeValue = nil
+            }
+        }
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
